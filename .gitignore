@@ -4,5 +4,4 @@
 !.gitignore
 
 !/Assets/
-
-/Assets/UnityVS*
+!/ProjectSettings/
