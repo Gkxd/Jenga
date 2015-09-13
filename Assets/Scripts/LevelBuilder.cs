@@ -3,7 +3,10 @@ using System.Collections;
 
 public class LevelBuilder : MonoBehaviour {
 
+    [Header("Reference Settings")]
     public GameObject blockPrefab;
+
+    [Header("Gameplay Settings")]
     public int numberOfLayers;
     public float jitter;
 
@@ -23,6 +26,7 @@ public class LevelBuilder : MonoBehaviour {
                 Vector3 randomness = jitter * (offset * Random.Range(-0.1f, 0.1f) + layerRotation * offset * Random.Range(-0.2f, 0.2f));
 
                 GameObject block = (GameObject)Object.Instantiate(blockPrefab, position + j * offset + randomness, layerRotation);
+                block.name = "Block " + (3 * i + j + 1);
                 block.transform.parent = transform;
             }
         }
