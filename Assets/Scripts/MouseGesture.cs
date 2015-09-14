@@ -33,12 +33,13 @@ public class MouseGesture : MonoBehaviour {
                 Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                 if (mouseDragTime < tapThreshold) {
-                    Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.1f);
-                    blockRB.AddForce(force, ForceMode.VelocityChange);
+                    Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.03f);
+                    blockRB.AddForceAtPosition(force, blockHit.point, ForceMode.VelocityChange);
                 }
                 else {
                     blockRB.velocity = Vector3.zero;
                     blockRB.constraints = RigidbodyConstraints.None;
+                    blockRB.useGravity = true;
                 }
             }
         }
@@ -52,17 +53,23 @@ public class MouseGesture : MonoBehaviour {
                     Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                     blockRB.constraints = RigidbodyConstraints.FreezeRotation;
+                    blockRB.useGravity = false;
 
                     Vector3 mouseHitLocationScreen = camera.WorldToScreenPoint(mouseHitLocation);
                     Vector3 currentMouseScreenPoint = Input.mousePosition + Vector3.forward * mouseHitLocationScreen.z;
                     Vector3 currentMouseWorldPoint = camera.ScreenToWorldPoint(currentMouseScreenPoint);
 
-                    //Debug.DrawLine(mouseHitLocation, currentMouseWorldPoint, Color.red, 10);
-
                     Vector3 offset = currentMouseWorldPoint - mouseHitLocation;
-                    Vector3 newBlockPosition = blockHitPosition + offset;
+                    
+                    Vector3 projectedOffset = Vector3.ProjectOnPlane(offset, blockHit.normal);
+                    blockHitPosition -= blockHit.normal * Input.GetAxis("Mouse ScrollWheel") * 100 * Time.deltaTime;
+                    
+                    Vector3 newBlockPosition = blockHitPosition + projectedOffset;
                     newBlockPosition.y = Mathf.Max(0, newBlockPosition.y);
-                    blockRB.MovePosition(newBlockPosition);
+
+                    Debug.Log(blockRB.position + " " + newBlockPosition);
+                    Vector3 moveDirection = newBlockPosition - blockRB.position;
+                    blockRB.velocity = moveDirection;
                 }
             }
         }
