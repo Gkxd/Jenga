@@ -99,9 +99,13 @@ public class MouseGesture : MonoBehaviour {
                     
                     Vector3 newBlockPosition = blockHitPosition + projectedOffset;
                     newBlockPosition.y = Mathf.Max(0, newBlockPosition.y);
-
-                    Debug.Log(blockRB.position + " " + newBlockPosition);
+                    
                     Vector3 moveDirection = newBlockPosition - blockRB.position;
+
+                    if (moveDirection.magnitude > 2) {
+                        moveDirection = moveDirection.normalized * 10;
+                    }
+
                     blockRB.velocity = moveDirection;
                 }
             }
