@@ -2,10 +2,13 @@
 using System.Collections;
 
 public class MouseGesture : MonoBehaviour {
+	
 
     [Header("Reference Settings")]
     public new Camera camera;
     public LayerMask blockMask;
+
+	public Material newMaterial;
 
     [Header("Gameplay Settings")]
     public float tapThreshold;
@@ -14,22 +17,44 @@ public class MouseGesture : MonoBehaviour {
     private float mouseDragTime;
 
     private RaycastHit blockHit;
+
+	//private GameObject AverageBlock = GameObject;
+
+	//private Material origMaterial =AverageBlock.Renderer.Material;
+
     private Vector3 mouseHitLocation;
     private Vector3 blockHitPosition;
 
 	void Update () {
         if (Input.GetMouseButtonDown(0)) {
+
             Ray r = camera.ScreenPointToRay(Input.mousePosition);
+
 
             if (Physics.Raycast(r.origin, r.direction, out blockHit, 100, blockMask)) {
                 mouseHitLocation = blockHit.point;
                 blockHitPosition = blockHit.collider.gameObject.transform.position;
+
+				GameObject block = blockHit.collider.gameObject;
+
+				//swetha
+				ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
+				script.selected = true;
+				//swetha
+
+
             }
         }
 
         if (Input.GetMouseButtonUp(0)) {
             if (blockHit.collider != null) {
                 GameObject block = blockHit.collider.gameObject;
+
+				//swetha
+				ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
+				script.selected = false;
+				//swetha
+
                 Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                 if (mouseDragTime < tapThreshold) {
@@ -45,11 +70,19 @@ public class MouseGesture : MonoBehaviour {
         }
 
         if (Input.GetMouseButton(0)) {
+
             mouseDragTime += Time.deltaTime;
 
             if (blockHit.collider != null) {
                 if (mouseDragTime >= tapThreshold) {
                     GameObject block = blockHit.collider.gameObject;
+
+					//swetha
+					ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
+					script.selected = true;
+					//swetha
+
+
                     Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                     blockRB.constraints = RigidbodyConstraints.FreezeRotation;
@@ -77,4 +110,6 @@ public class MouseGesture : MonoBehaviour {
             mouseDragTime = 0;
         }
     }
+
+
 }
