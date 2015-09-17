@@ -13,7 +13,7 @@ public class ColorCodingAcceleration : MonoBehaviour {
         if (selected == false) {
             if (rb.velocity.z != 0.0) {
                 MeshRenderer blockRenderer = GetComponent<MeshRenderer>();
-                float c = 1 - rb.velocity.magnitude;
+                float c = Mathf.Clamp01(1 - rb.velocity.z);
                 blockRenderer.material.SetColor("_Color", new Color(c, c, c, 1));
             }
             else {
