@@ -2,13 +2,13 @@
 using System.Collections;
 
 public class MouseGesture : MonoBehaviour {
-	
+
 
     [Header("Reference Settings")]
     public new Camera camera;
     public LayerMask blockMask;
 
-	public Material newMaterial;
+    public Material newMaterial;
 
     [Header("Gameplay Settings")]
     public float tapThreshold;
@@ -18,14 +18,10 @@ public class MouseGesture : MonoBehaviour {
 
     private RaycastHit blockHit;
 
-	//private GameObject AverageBlock = GameObject;
-
-	//private Material origMaterial =AverageBlock.Renderer.Material;
-
     private Vector3 mouseHitLocation;
     private Vector3 blockHitPosition;
 
-	void Update () {
+    void Update() {
         if (Input.GetMouseButtonDown(0)) {
 
             Ray r = camera.ScreenPointToRay(Input.mousePosition);
@@ -35,14 +31,7 @@ public class MouseGesture : MonoBehaviour {
                 mouseHitLocation = blockHit.point;
                 blockHitPosition = blockHit.collider.gameObject.transform.position;
 
-				GameObject block = blockHit.collider.gameObject;
-
-				//swetha
-				ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
-				script.selected = true;
-				//swetha
-
-
+                GameObject block = blockHit.collider.gameObject;
             }
         }
 
@@ -50,10 +39,8 @@ public class MouseGesture : MonoBehaviour {
             if (blockHit.collider != null) {
                 GameObject block = blockHit.collider.gameObject;
 
-				//swetha
-				ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
-				script.selected = false;
-				//swetha
+                ColorCodingAcceleration script = block.GetComponent<ColorCodingAcceleration>();
+                script.selected = false;
 
                 Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
@@ -77,11 +64,8 @@ public class MouseGesture : MonoBehaviour {
                 if (mouseDragTime >= tapThreshold) {
                     GameObject block = blockHit.collider.gameObject;
 
-					//swetha
-					ColorCodingAcceleration script  = block.GetComponent<ColorCodingAcceleration>();
-					script.selected = true;
-					//swetha
-
+                    ColorCodingAcceleration script = block.GetComponent<ColorCodingAcceleration>();
+                    script.selected = true;
 
                     Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
@@ -93,15 +77,18 @@ public class MouseGesture : MonoBehaviour {
                     Vector3 currentMouseWorldPoint = camera.ScreenToWorldPoint(currentMouseScreenPoint);
 
                     Vector3 offset = currentMouseWorldPoint - mouseHitLocation;
-                    
+
                     Vector3 projectedOffset = Vector3.ProjectOnPlane(offset, blockHit.normal);
                     blockHitPosition -= blockHit.normal * Input.GetAxis("Mouse ScrollWheel") * 100 * Time.deltaTime;
-                    
+
                     Vector3 newBlockPosition = blockHitPosition + projectedOffset;
                     newBlockPosition.y = Mathf.Max(0, newBlockPosition.y);
-
-                   // Debug.Log(blockRB.position + " " + newBlockPosition);
                     Vector3 moveDirection = newBlockPosition - blockRB.position;
+
+                    if (moveDirection.magnitude > 2) {
+                        moveDirection = moveDirection.normalized * 10;
+                    }
+
                     blockRB.velocity = moveDirection;
                 }
             }
@@ -110,6 +97,4 @@ public class MouseGesture : MonoBehaviour {
             mouseDragTime = 0;
         }
     }
-
-
 }

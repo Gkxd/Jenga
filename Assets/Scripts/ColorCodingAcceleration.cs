@@ -3,48 +3,32 @@ using System.Collections;
 
 public class ColorCodingAcceleration : MonoBehaviour {
 
-	// Use this for initialization
-	public Rigidbody rb;
-	public GameObject thisBlock;
-	public bool selected =	false;
-	
-	//public bool selected = MouseGesture.selected;
-
-	void Start() {
-		rb = GetComponent<Rigidbody> ();
-	}
+    [Header("Reference Settings")]
+    public Rigidbody rb;
 
 
+    public bool selected {get; set;}
 
+    void Update() {
+        if (selected == false) {
+            if (rb.velocity.z != 0.0) {
+                MeshRenderer blockRenderer = GetComponent<MeshRenderer>();
+                float c = 1 - rb.velocity.magnitude;
+                blockRenderer.material.SetColor("_Color", new Color(c, c, c, 1));
+            }
+            else {
+                changeColor();
+            }
+        }
+        else {
+            MeshRenderer blockRenderer = GetComponent<MeshRenderer>();
 
-	// Update is called once per frame
-	void Update () {
+            blockRenderer.material.SetColor("_Color", Color.red);
+        }
+    }
 
-		if (selected == false) {
-			if (rb.velocity.z != 0.0) {
-
-				MeshRenderer blockRenderer = GetComponent<MeshRenderer> ();
-				blockRenderer.material.SetColor ("_Color", new Color (1-rb.velocity.z, 1-rb.velocity.z, 1-rb.velocity.z));
-		
-			} else {
-				changeColor ();
-
-			}
-		} else {
-			MeshRenderer blockRenderer = GetComponent<MeshRenderer> ();
-
-			blockRenderer.material.SetColor ("_Color", new Color (1,0,0));
-
-		}
-	
-	}
-
-	void changeColor(){
-
-				
-		MeshRenderer blockRenderer = GetComponent<MeshRenderer> ();
-		blockRenderer.material.SetColor ("_Color", new Color(1,1,1));
-
-	}
-
+    void changeColor() {
+        MeshRenderer blockRenderer = GetComponent<MeshRenderer>();
+        blockRenderer.material.SetColor("_Color", Color.white);
+    }
 }
