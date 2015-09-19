@@ -78,8 +78,7 @@ public class MouseGesture : MonoBehaviour {
 
                     Vector3 offset = currentMouseWorldPoint - mouseHitLocation;
 
-                    Vector3 projectedOffset = Vector3.ProjectOnPlane(offset, blockHit.normal);
-                    blockHitPosition -= blockHit.normal * Input.GetAxis("Mouse ScrollWheel") * 100 * Time.deltaTime;
+                    Vector3 projectedOffset = Vector3.ProjectOnPlane(offset, Vector3.up);
 
                     Vector3 newBlockPosition = blockHitPosition + projectedOffset;
                     newBlockPosition.y = Mathf.Max(0, newBlockPosition.y);

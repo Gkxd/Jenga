@@ -28,8 +28,10 @@ public class CameraMovement : MonoBehaviour {
                 pitch -= Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
             }
             else if (Input.GetMouseButton(2)) {
-                Vector3 movement = transform.up * Input.GetAxis("Mouse Y") + transform.right * Input.GetAxis("Mouse X");
+                Vector3 movement = Vector3.up * Input.GetAxis("Mouse Y");
                 transform.position -= movement * panSpeed * Time.deltaTime;
+
+                yaw += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             }
             scale -= Input.GetAxis("Mouse ScrollWheel") * zoomSpeed * Time.deltaTime;
 
