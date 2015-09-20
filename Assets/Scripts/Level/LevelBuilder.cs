@@ -8,7 +8,6 @@ public class LevelBuilder : MonoBehaviour {
     public GameObject blockPrefab;
 
     [Header("Gameplay Settings")]
-    public int numberOfLayers;
     public float jitter;
 
     private float blockHeight;
@@ -19,9 +18,6 @@ public class LevelBuilder : MonoBehaviour {
     void Start() {
         blockHeight = blockPrefab.transform.localScale.y;
         blockWidth = blockPrefab.transform.localScale.x;
-
-        StateSystem.DangerBlocks = numberOfLayers * 3;
-        StateSystem.NumberOfLayers = numberOfLayers;
 
         buildLevel();
         instance = this;
@@ -38,7 +34,7 @@ public class LevelBuilder : MonoBehaviour {
 
         additionalBlockCounter = 0;
         
-        for (int i = 0; i < numberOfLayers; i++) {
+        for (int i = 0; i < StateSystem.NumberOfLayers; i++) {
             float layerHeight = blockHeight * i;
 
             Vector3 position = new Vector3(0, layerHeight, 0);
@@ -63,10 +59,10 @@ public class LevelBuilder : MonoBehaviour {
     }
 
     private void addBlock() {
-        int layer = numberOfLayers + additionalBlockCounter / 3;
+        int layer = StateSystem.NumberOfLayers + additionalBlockCounter / 3;
 
-        if (layer > 30) {
-            layer = 19 + layer % 12;
+        if (layer > 70) {
+            layer = 39 + layer % 32;
         }
 
         float layerHeight = blockHeight * (layer + 0.5f);
@@ -77,7 +73,7 @@ public class LevelBuilder : MonoBehaviour {
         Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0) * (additionalBlockCounter % 3 - 1);
 
         GameObject block = (GameObject)Object.Instantiate(blockPrefab, position + offset, layerRotation);
-        block.name = "Block " + (numberOfLayers * 3 + additionalBlockCounter);
+        block.name = "Block " + (StateSystem.NumberOfLayers * 3 + additionalBlockCounter);
         block.transform.parent = transform;
 
         additionalBlockCounter++;

@@ -3,62 +3,51 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class StateSystem : MonoBehaviour {
-
-    public static int DangerBlocks {
-        private get {
-            return instance.numberOfDangerBlocks;
-        }
-        set {
-            instance.numberOfDangerBlocks = value;
-        }
-    }
-
     public static int NumberOfLayers {
-        private get {
+        get {
             return instance.numberOfLayers;
-        }
-        set {
-            instance.numberOfLayers = value;
         }
     }
 
     public static bool IsGameOver {
         get {
-            return DangerBlocks > 1;
+            return instance.numberOfDangerBlocks > 1;
         }
     }
 
-    public static bool IsLastSelectedBlockPlacedWell {
-        get {
-            if (LastSelectedBlock == null) {
+    public static bool CheckLastSelectedBlockPlacedWell(bool updateBlocks) {
+        if (LastSelectedBlock == null) {
+            return true;
+        }
+        else {
+
+            int layer = NumberOfLayers + instance.moveCounter / 3;
+            float layerHeight = blockHeight * layer;
+
+            Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
+            Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
+
+            Vector3 positionXZ = Vector3.Scale(LastSelectedBlock.transform.position, Vector3.one - Vector3.up);
+
+            float horizontalPositionDifference = Mathf.Min(
+                (positionXZ).sqrMagnitude,
+                (positionXZ - offset).sqrMagnitude,
+                (positionXZ + offset).sqrMagnitude
+                );
+
+            float verticalPositionDifference = Mathf.Abs(LastSelectedBlock.transform.position.y - layerHeight);
+
+            float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
+
+            if (horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f) {
+                if (updateBlocks) {
+                    instance.moveCounter++;
+                    AddTopBlock(LastSelectedBlock);
+                }
                 return true;
             }
             else {
-
-                int layer = NumberOfLayers + instance.moveCounter / 3 + 1;
-                float layerHeight = blockHeight * layer - 1.5f;
-
-                Vector3 targetBlockPosition = new Vector3(0, layerHeight, 0);
-
-                Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
-                Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
-
-                float positionDifference = Mathf.Min(
-                    (targetBlockPosition - LastSelectedBlock.transform.position).sqrMagnitude,
-                    (targetBlockPosition - offset - LastSelectedBlock.transform.position).sqrMagnitude,
-                    (targetBlockPosition + offset - LastSelectedBlock.transform.position).sqrMagnitude
-                    );
-
-                float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
-
-                if (positionDifference < 8 && angleDifference < 3) {
-                    instance.moveCounter++;
-                    AddTopBlock(LastSelectedBlock);
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return false;
             }
         }
     }
@@ -78,10 +67,12 @@ public class StateSystem : MonoBehaviour {
     private static float blockWidth;
     private static float blockHeight;
 
+    [Header("Gameplay Settings")]
+    public int numberOfLayers;
+
     private GameObject lastSelectedBlock;
     private int moveCounter;
     private int numberOfDangerBlocks;
-    private int numberOfLayers;
 
     private Queue<GameObject> topBlocks;
 
@@ -97,20 +88,33 @@ public class StateSystem : MonoBehaviour {
 
     public static void DecreaseDangerBlocks() {
         instance.numberOfDangerBlocks--;
+        if (instance.numberOfDangerBlocks < 0) {
+            instance.numberOfDangerBlocks = 0;
+        }
     }
 
     public static void AddTopBlock(GameObject block) {
         instance.addTopBlock(block);
     }
 
-    public static bool IsTopBlock(GameObject block) {
-        return instance.topBlocks.Contains(block);
-    }
-
     private void addTopBlock(GameObject block) {
         topBlocks.Enqueue(block);
         if (topBlocks.Count > 6) {
             topBlocks.Dequeue();
+        }
+    }
+
+    public static bool IsTopBlock(GameObject block) {
+        return instance.topBlocks.Contains(block);
+    }
+
+    public static void FlashTopBlocks() {
+        instance.flashTopBlocks();
+    }
+
+    private void flashTopBlocks() {
+        foreach (GameObject block in topBlocks) {
+            block.GetComponent<ColorChange>().flashError();
         }
     }
 }

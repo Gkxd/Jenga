@@ -36,12 +36,12 @@ public class MouseGesture : MonoBehaviour {
 
                 if (StateSystem.IsTopBlock(blockHit.collider.gameObject)) {
                     blockHit = new RaycastHit(); // Invalid block clicked, reset raycast info
-                    Debug.Log("You can't choose a block from the top.");
+                    StateSystem.FlashTopBlocks();
                 }
-                else if (!StateSystem.IsLastSelectedBlockPlacedWell) {
+                else if (!StateSystem.CheckLastSelectedBlockPlacedWell(true)) {
                     if (blockHit.collider.gameObject != StateSystem.LastSelectedBlock) {
                         blockHit = new RaycastHit(); // Invalid block clicked, reset raycast info
-                        Debug.Log("Please place the block correctly.");
+                        StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
                     }
                     else {
                         mouseHitLocation = blockHit.point;
@@ -63,14 +63,14 @@ public class MouseGesture : MonoBehaviour {
             if (blockHit.collider != null) {
                 GameObject block = blockHit.collider.gameObject;
 
-                ColorCodingAcceleration colorChange = block.GetComponent<ColorCodingAcceleration>();
+                ColorChange colorChange = block.GetComponent<ColorChange>();
                 colorChange.selected = false;
 
                 Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                 if (mouseDragTime < tapThreshold) {
-                    if (!StateSystem.IsLastSelectedBlockPlacedWell && StateSystem.LastSelectedBlock != block) {
-                        Debug.Log("Please place the block correctly.");
+                    if (!StateSystem.CheckLastSelectedBlockPlacedWell(false) && StateSystem.LastSelectedBlock != block) {
+                        StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
                     }
                     else {
                         Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.03f);
@@ -93,7 +93,7 @@ public class MouseGesture : MonoBehaviour {
                 if (mouseDragTime >= tapThreshold) {
                     GameObject block = blockHit.collider.gameObject;
 
-                    ColorCodingAcceleration colorChange = block.GetComponent<ColorCodingAcceleration>();
+                    ColorChange colorChange = block.GetComponent<ColorChange>();
                     colorChange.selected = true;
 
                     Rigidbody blockRB = block.GetComponent<Rigidbody>();
