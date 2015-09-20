@@ -3,8 +3,9 @@ using System.Collections;
 
 public class DeleteRemovedPieces : MonoBehaviour {
     void OnCollisionEnter(Collision collisionInfo) {
-        if (collisionInfo.collider.tag == "ground") {
+        if (collisionInfo.collider.tag == "RemoveBlock") {
             Destroy(gameObject);
+            LevelBuilder.AddBlock();
         }
     }
 }

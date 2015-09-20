@@ -20,6 +20,9 @@ public class LevelBuilder : MonoBehaviour {
         blockHeight = blockPrefab.transform.localScale.y;
         blockWidth = blockPrefab.transform.localScale.x;
 
+        StateSystem.DangerBlocks = numberOfLayers * 3;
+        StateSystem.NumberOfLayers = numberOfLayers;
+
         buildLevel();
         instance = this;
     }
@@ -49,6 +52,8 @@ public class LevelBuilder : MonoBehaviour {
                 GameObject block = (GameObject)Instantiate(blockPrefab, position + j * offset + randomness, layerRotation);
                 block.name = "Block " + (3 * i + j + 1);
                 block.transform.parent = transform;
+
+                StateSystem.AddTopBlock(block);
             }
         }
     }
@@ -59,6 +64,11 @@ public class LevelBuilder : MonoBehaviour {
 
     private void addBlock() {
         int layer = numberOfLayers + additionalBlockCounter / 3;
+
+        if (layer > 30) {
+            layer = 19 + layer % 12;
+        }
+
         float layerHeight = blockHeight * (layer + 0.5f);
 
         Vector3 position = new Vector3(0, layerHeight, 0);
