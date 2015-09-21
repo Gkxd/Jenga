@@ -11,6 +11,7 @@ public class ColorChange : MonoBehaviour {
     public Gradient velocityColor;
     public Color selectedColor;
     public Color errorColor;
+    public Color confirmColor;
 
     public bool selected {get; set;}
 
@@ -39,5 +40,9 @@ public class ColorChange : MonoBehaviour {
 
     public void flashError() {
         currentColor = errorColor;
+    }
+
+    public void flashGood() {
+        currentColor = confirmColor;
     }
 }

@@ -15,42 +15,7 @@ public class StateSystem : MonoBehaviour {
         }
     }
 
-    public static bool CheckLastSelectedBlockPlacedWell(bool updateBlocks) {
-        if (LastSelectedBlock == null) {
-            return true;
-        }
-        else {
-
-            int layer = NumberOfLayers + instance.moveCounter / 3;
-            float layerHeight = blockHeight * layer;
-
-            Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
-            Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
-
-            Vector3 positionXZ = Vector3.Scale(LastSelectedBlock.transform.position, Vector3.one - Vector3.up);
-
-            float horizontalPositionDifference = Mathf.Min(
-                (positionXZ).sqrMagnitude,
-                (positionXZ - offset).sqrMagnitude,
-                (positionXZ + offset).sqrMagnitude
-                );
-
-            float verticalPositionDifference = Mathf.Abs(LastSelectedBlock.transform.position.y - layerHeight);
-
-            float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
-
-            if (horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f) {
-                if (updateBlocks) {
-                    instance.moveCounter++;
-                    AddTopBlock(LastSelectedBlock);
-                }
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
+    public static bool HasBlockBeenPlacedWell { get; private set; }
 
     public static GameObject LastSelectedBlock {
         get {
@@ -60,6 +25,7 @@ public class StateSystem : MonoBehaviour {
             instance.lastSelectedBlock = value;
             blockWidth = LastSelectedBlock.transform.localScale.x;
             blockHeight = LastSelectedBlock.transform.localScale.y;
+            HasBlockBeenPlacedWell = false;
         }
     }
 
@@ -80,6 +46,52 @@ public class StateSystem : MonoBehaviour {
         instance = this;
 
         topBlocks = new Queue<GameObject>(3);
+
+        HasBlockBeenPlacedWell = true;
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            if (!HasBlockBeenPlacedWell) {
+                if (isLastSelectedBlockPlacedWell()) {
+                    moveCounter++;
+                    AddTopBlock(LastSelectedBlock);
+                    HasBlockBeenPlacedWell = true;
+                    LastSelectedBlock.GetComponent<ColorChange>().flashGood();
+                }
+                else {
+                    LastSelectedBlock.GetComponent<ColorChange>().flashError();
+                }
+            }
+        }
+    }
+
+    private bool isLastSelectedBlockPlacedWell() {
+        if (LastSelectedBlock == null) {
+            return false;
+        }
+        else {
+            int layer = NumberOfLayers + moveCounter / 3;
+            float layerHeight = blockHeight * layer;
+
+            Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
+            Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
+
+            Vector3 positionXZ = Vector3.Scale(LastSelectedBlock.transform.position, Vector3.one - Vector3.up);
+
+            float horizontalPositionDifference = Mathf.Min(
+                (positionXZ).sqrMagnitude,
+                (positionXZ - offset).sqrMagnitude,
+                (positionXZ + offset).sqrMagnitude
+                );
+
+            float verticalPositionDifference = Mathf.Abs(LastSelectedBlock.transform.position.y - layerHeight);
+
+            float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
+            Debug.Log(horizontalPositionDifference + " " + verticalPositionDifference + " " + angleDifference);
+
+            return horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f;
+        }
     }
 
     public static void IncreaseDangerBlocks() {
