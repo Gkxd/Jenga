@@ -33,10 +33,6 @@ public class CameraMovement : MonoBehaviour {
 
     void Update() {
         if (!Input.GetMouseButton(0)) {
-            if (Input.GetMouseButton(1)) {
-                yaw += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-                pitch -= Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
-            }
             //scale -= Input.GetAxis("Mouse ScrollWheel") * zoomSpeed * Time.deltaTime;
 
             if (Input.GetKey(KeyCode.R)) {
@@ -45,12 +41,11 @@ public class CameraMovement : MonoBehaviour {
         }
 
         if (Input.GetMouseButton(1)) {
-            //Vector3 movement = Vector3.up * Input.GetAxis("Mouse Y");
-            //transform.position -= movement * panSpeed * Time.deltaTime;
-
             yaw += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             pitch -= Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
         }
+
+        pitch = Mathf.Clamp(pitch, -40, 40);
 
         transform.eulerAngles = new Vector3(pitch, yaw, 0);
         transform.localScale = Vector3.one * scale;

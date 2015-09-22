@@ -34,8 +34,9 @@ public class ColorChange : MonoBehaviour {
             targetColor = selectedColor;
         }
 
-        currentColor = Color.Lerp(currentColor, targetColor, 2 * Time.deltaTime);
+        currentColor = Color.Lerp(currentColor, targetColor, 10 * Time.deltaTime);
         blockMaterial.SetColor("_Color", currentColor);
+        blockMaterial.SetColor("_EmissionColor", currentColor);
     }
 
     public void flashError() {
