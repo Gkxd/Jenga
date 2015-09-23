@@ -5,3 +5,6 @@
 
 !/Assets/
 !/ProjectSettings/
+
+.DS_Store
+*.meta
