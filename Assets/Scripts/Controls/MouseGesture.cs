@@ -39,7 +39,7 @@ public class MouseGesture : MonoBehaviour {
                         blockHit = new RaycastHit(); // Invalid block clicked, reset raycast info
                         StateSystem.FlashTopBlocks();
                     }
-                    else if (!StateSystem.HasBlockBeenPlacedWell) {
+                    else if (!StateSystem.HasBlockBeenPlacedWell && StateSystem.LastSelectedBlock != null) {
                         if (blockHit.collider.gameObject != StateSystem.LastSelectedBlock) {
                             blockHit = new RaycastHit(); // Invalid block clicked, reset raycast info
                             StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
@@ -56,6 +56,8 @@ public class MouseGesture : MonoBehaviour {
                         lastBlockPosition = blockHitPosition = blockHit.collider.gameObject.transform.position;
                         blockHitEulerAngles = blockHit.collider.gameObject.transform.eulerAngles;
                         blockYaw = 0;
+
+                        StateSystem.LastInteractedBlock = blockHit.collider.gameObject;
                     }
                 }
             }
@@ -70,13 +72,13 @@ public class MouseGesture : MonoBehaviour {
                     Rigidbody blockRB = block.GetComponent<Rigidbody>();
 
                     if (mouseDragTime < tapThreshold) {
-                        if (!StateSystem.HasBlockBeenPlacedWell && StateSystem.LastSelectedBlock != block) {
+                        if (!StateSystem.HasBlockBeenPlacedWell && StateSystem.LastSelectedBlock != null && StateSystem.LastSelectedBlock != block) {
                             StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
                         }
                         else {
                             Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.03f);
                             blockRB.AddForceAtPosition(force, blockHit.point, ForceMode.VelocityChange);
-                            StateSystem.LastSelectedBlock = block;
+                            //StateSystem.LastSelectedBlock = block;
                         }
                     }
                     else {
@@ -137,9 +139,11 @@ public class MouseGesture : MonoBehaviour {
                             blockRB.angularVelocity = Vector3.zero;
                         }
 
+                        /*
                         if ((blockHitPosition - lastBlockPosition).sqrMagnitude > 4) {
                             StateSystem.LastSelectedBlock = blockHit.collider.gameObject;
                         }
+                         */
                     }
                 }
             }

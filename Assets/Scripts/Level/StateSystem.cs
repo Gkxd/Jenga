@@ -23,9 +23,16 @@ public class StateSystem : MonoBehaviour {
         }
         set {
             instance.lastSelectedBlock = value;
-            blockWidth = LastSelectedBlock.transform.localScale.x;
-            blockHeight = LastSelectedBlock.transform.localScale.y;
             HasBlockBeenPlacedWell = false;
+        }
+    }
+
+    public static GameObject LastInteractedBlock {
+        get {
+            return instance.lastInteractedBlock;
+        }
+        set {
+            instance.lastInteractedBlock = value;
         }
     }
 
@@ -37,6 +44,7 @@ public class StateSystem : MonoBehaviour {
     public int numberOfLayers;
 
     private GameObject lastSelectedBlock;
+    private GameObject lastInteractedBlock;
     private int moveCounter;
     private int numberOfDangerBlocks;
 
@@ -52,12 +60,13 @@ public class StateSystem : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            if (!HasBlockBeenPlacedWell) {
+            if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
                 if (isLastSelectedBlockPlacedWell()) {
                     moveCounter++;
                     AddTopBlock(LastSelectedBlock);
                     HasBlockBeenPlacedWell = true;
                     LastSelectedBlock.GetComponent<ColorChange>().flashGood();
+                    LastSelectedBlock = null;
                 }
                 else {
                     LastSelectedBlock.GetComponent<ColorChange>().flashError();
@@ -92,6 +101,11 @@ public class StateSystem : MonoBehaviour {
 
             return horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f;
         }
+    }
+
+    public static void SetBlockDimensions(float width, float height) {
+        blockWidth = width;
+        blockHeight = height;
     }
 
     public static void IncreaseDangerBlocks() {
