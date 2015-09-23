@@ -19,6 +19,8 @@ public class LevelBuilder : MonoBehaviour {
         blockHeight = blockPrefab.transform.localScale.y;
         blockWidth = blockPrefab.transform.localScale.x;
 
+        StateSystem.SetBlockDimensions(blockWidth, blockHeight);
+
         buildLevel();
         instance = this;
     }
