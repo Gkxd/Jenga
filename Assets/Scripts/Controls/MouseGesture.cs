@@ -52,6 +52,7 @@ public class MouseGesture : MonoBehaviour {
                         }
                     }
                     else {
+
                         mouseHitLocation = blockHit.point;
                         lastBlockPosition = blockHitPosition = blockHit.collider.gameObject.transform.position;
                         blockHitEulerAngles = blockHit.collider.gameObject.transform.eulerAngles;
@@ -76,6 +77,7 @@ public class MouseGesture : MonoBehaviour {
                             StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
                         }
                         else {
+							(blockHit.collider.gameObject.GetComponent<AudioSource>()).Play();
                             Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.03f);
                             blockRB.AddForceAtPosition(force, blockHit.point, ForceMode.VelocityChange);
                             //StateSystem.LastSelectedBlock = block;
