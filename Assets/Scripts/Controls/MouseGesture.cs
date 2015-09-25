@@ -77,7 +77,9 @@ public class MouseGesture : MonoBehaviour {
                             StateSystem.LastSelectedBlock.GetComponent<ColorChange>().flashError();
                         }
                         else {
+							//Swetha
 							(blockHit.collider.gameObject.GetComponent<AudioSource>()).Play();
+
                             Vector3 force = -blockHit.normal * tapForce * (mouseDragTime / 0.03f);
                             blockRB.AddForceAtPosition(force, blockHit.point, ForceMode.VelocityChange);
                             //StateSystem.LastSelectedBlock = block;
