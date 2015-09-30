@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Leap;
 
 public class StateSystem : MonoBehaviour {
     public static int NumberOfLayers {
@@ -16,6 +17,8 @@ public class StateSystem : MonoBehaviour {
     }
 
     public static bool HasBlockBeenPlacedWell { get; private set; }
+
+    public static bool HasSelectedBlockColor { get; private set; }
 
     public static GameObject LastSelectedBlock {
         get {
@@ -36,9 +39,16 @@ public class StateSystem : MonoBehaviour {
         }
     }
 
+    public static GameObject BlockTouchingHand { get; set; }
+
+    //public static Controller controller;
+
     private static StateSystem instance;
     private static float blockWidth;
     private static float blockHeight;
+
+    [Header("Reference Settings")]
+    public HandController controller;
 
     [Header("Gameplay Settings")]
     public int numberOfLayers;
@@ -70,6 +80,41 @@ public class StateSystem : MonoBehaviour {
                 }
                 else {
                     LastSelectedBlock.GetComponent<ColorChange>().flashError();
+                }
+            }
+        }
+
+        GameObject hand;
+        if (hand = GameObject.FindGameObjectWithTag("Hand")) {
+
+            HandList hands = controller.GetFrame().Hands;
+
+            Hand leapMotionHand = hands.Frontmost;
+
+            if (leapMotionHand.GrabStrength >= 0.7f) {
+                if (lastInteractedBlock == null) {
+                    foreach (Transform child in transform) {
+                        if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
+                            Transform palm = hand.transform.Find("palm");
+                            Vector3 palmPosition = palm.position;
+                            BoxCollider blockCollider = child.GetComponent<BoxCollider>();
+                            if (blockCollider.bounds.Contains(palmPosition)) {
+                                lastInteractedBlock = child.gameObject;
+                                lastInteractedBlock.GetComponent<LockToPalm>().palm = palm;
+                                lastInteractedBlock.GetComponent<ColorChange>().selected = true;
+                                HasSelectedBlockColor = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (lastInteractedBlock != null) {
+                    lastInteractedBlock.GetComponent<LockToPalm>().palm = null;
+                    lastInteractedBlock.GetComponent<ColorChange>().selected = false;
+                    HasSelectedBlockColor = false;
+                    lastInteractedBlock = null;
                 }
             }
         }
