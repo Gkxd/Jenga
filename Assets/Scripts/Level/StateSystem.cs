@@ -20,6 +20,10 @@ public class StateSystem : MonoBehaviour {
 
     public static bool HasSelectedBlockColor { get; private set; }
 
+    public static float LeapmotionGrabYaw { get; private set; }
+
+    public static float LastBlockGrabYaw { get; private set; }
+
     public static GameObject LastSelectedBlock {
         get {
             return instance.lastSelectedBlock;
@@ -77,6 +81,7 @@ public class StateSystem : MonoBehaviour {
                     HasBlockBeenPlacedWell = true;
                     LastSelectedBlock.GetComponent<ColorChange>().flashGood();
                     LastSelectedBlock = null;
+                    LastInteractedBlock = null;
                 }
                 else {
                     LastSelectedBlock.GetComponent<ColorChange>().flashError();
@@ -100,9 +105,13 @@ public class StateSystem : MonoBehaviour {
                             BoxCollider blockCollider = child.GetComponent<BoxCollider>();
                             if (blockCollider.bounds.Contains(palmPosition)) {
                                 lastInteractedBlock = child.gameObject;
-                                lastInteractedBlock.GetComponent<LockToPalm>().palm = palm;
+                                lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = palm;
                                 lastInteractedBlock.GetComponent<ColorChange>().selected = true;
+
                                 HasSelectedBlockColor = true;
+                                LeapmotionGrabYaw = palm.localEulerAngles.y;
+                                LastBlockGrabYaw = child.localEulerAngles.y;
+
                                 break;
                             }
                         }
@@ -111,7 +120,7 @@ public class StateSystem : MonoBehaviour {
             }
             else {
                 if (lastInteractedBlock != null) {
-                    lastInteractedBlock.GetComponent<LockToPalm>().palm = null;
+                    lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
                     lastInteractedBlock.GetComponent<ColorChange>().selected = false;
                     HasSelectedBlockColor = false;
                     lastInteractedBlock = null;
