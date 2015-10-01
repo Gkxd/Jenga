@@ -24,6 +24,12 @@ public class StateSystem : MonoBehaviour {
 
     public static float LastBlockGrabYaw { get; private set; }
 
+    public static float LayerHeight {
+        get {
+            return blockHeight * (NumberOfLayers + instance.moveCounter / 3);
+        }
+    }
+
     public static GameObject LastSelectedBlock {
         get {
             return instance.lastSelectedBlock;
@@ -42,8 +48,6 @@ public class StateSystem : MonoBehaviour {
             instance.lastInteractedBlock = value;
         }
     }
-
-    public static GameObject BlockTouchingHand { get; set; }
 
     //public static Controller controller;
 
@@ -70,6 +74,8 @@ public class StateSystem : MonoBehaviour {
         topBlocks = new Queue<GameObject>(3);
 
         HasBlockBeenPlacedWell = true;
+
+        controller.GetLeapController().EnableGesture(Gesture.GestureType.TYPE_CIRCLE);
     }
 
     void Update() {
@@ -96,7 +102,7 @@ public class StateSystem : MonoBehaviour {
 
             Hand leapMotionHand = hands.Frontmost;
 
-            if (leapMotionHand.GrabStrength >= 0.7f) {
+            if (leapMotionHand.GrabStrength > 0.8f) {
                 if (lastInteractedBlock == null) {
                     foreach (Transform child in transform) {
                         if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
@@ -104,6 +110,12 @@ public class StateSystem : MonoBehaviour {
                             Vector3 palmPosition = palm.position;
                             BoxCollider blockCollider = child.GetComponent<BoxCollider>();
                             if (blockCollider.bounds.Contains(palmPosition)) {
+
+                                if (IsTopBlock(child.gameObject)) {
+                                    FlashTopBlocks();
+                                    break;
+                                }
+
                                 lastInteractedBlock = child.gameObject;
                                 lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = palm;
                                 lastInteractedBlock.GetComponent<ColorChange>().selected = true;
@@ -124,6 +136,26 @@ public class StateSystem : MonoBehaviour {
                     lastInteractedBlock.GetComponent<ColorChange>().selected = false;
                     HasSelectedBlockColor = false;
                     lastInteractedBlock = null;
+                }
+
+                GestureList gestures = controller.GetFrame().Gestures();
+                foreach (Gesture gesture in gestures) {
+                    if (gesture.Type == Gesture.GestureType.TYPE_CIRCLE) {
+                        if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
+                            if (isLastSelectedBlockPlacedWell()) {
+                                moveCounter++;
+                                AddTopBlock(LastSelectedBlock);
+                                HasBlockBeenPlacedWell = true;
+                                LastSelectedBlock.GetComponent<ColorChange>().flashGood();
+                                LastSelectedBlock = null;
+                                LastInteractedBlock = null;
+                            }
+                            else {
+                                LastSelectedBlock.GetComponent<ColorChange>().flashError();
+                            }
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -153,7 +185,8 @@ public class StateSystem : MonoBehaviour {
             float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
             Debug.Log(horizontalPositionDifference + " " + verticalPositionDifference + " " + angleDifference);
 
-            return horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f;
+            //return horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f;
+            return verticalPositionDifference < 0.2f;
         }
     }
 

@@ -33,7 +33,7 @@ public class ColorChange : MonoBehaviour {
             float t = Mathf.Clamp01(blockRB.velocity.magnitude / 10);
             targetColor = velocityColor.Evaluate(t);
 
-            if ((StateSystem.LastSelectedBlock == null || StateSystem.LastSelectedBlock == gameObject) && !StateSystem.HasSelectedBlockColor) {
+            if ((StateSystem.LastSelectedBlock == null || StateSystem.LastSelectedBlock == gameObject) && !StateSystem.HasSelectedBlockColor && !StateSystem.IsTopBlock(gameObject)) {
                 GameObject hand;
                 if (hand = GameObject.FindGameObjectWithTag("Hand")) {
                     Vector3 palmPosition = hand.transform.Find("palm").position;

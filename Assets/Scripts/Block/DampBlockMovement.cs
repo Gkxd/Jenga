@@ -17,7 +17,7 @@ public class DampBlockMovement : MonoBehaviour {
     }
 
     void Update() {
-        if (StateSystem.IsGameOver || Input.GetMouseButton(0)) {
+        if (StateSystem.IsGameOver || Input.GetMouseButton(0) || StateSystem.LastSelectedBlock != null) {
             dampAmount = 0;
         }
         else {

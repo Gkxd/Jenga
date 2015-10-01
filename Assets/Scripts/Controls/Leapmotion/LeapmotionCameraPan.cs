@@ -24,6 +24,9 @@ public class LeapmotionCameraPan : MonoBehaviour {
             if (transform.position.y < -0.5f) {
                 transform.position = -0.5f * Vector3.up;
             }
+            else if (transform.position.y > StateSystem.LayerHeight + 5) {
+                transform.position = (StateSystem.LayerHeight + 5) * Vector3.up;
+            }
 
             if (palm.localPosition.x < -0.25f) {
                 yaw += rotateSpeed * Time.deltaTime;
