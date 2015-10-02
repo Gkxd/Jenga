@@ -36,6 +36,7 @@ public class StateSystem : MonoBehaviour {
         }
         set {
             instance.lastSelectedBlock = value;
+			LastSelectedBlock.tag = "selectedBlock";
             HasBlockBeenPlacedWell = false;
         }
     }
@@ -86,6 +87,7 @@ public class StateSystem : MonoBehaviour {
                     AddTopBlock(LastSelectedBlock);
                     HasBlockBeenPlacedWell = true;
                     LastSelectedBlock.GetComponent<ColorChange>().flashGood();
+					LastSelectedBlock.tag = "Block";
                     LastSelectedBlock = null;
                     LastInteractedBlock = null;
                 }

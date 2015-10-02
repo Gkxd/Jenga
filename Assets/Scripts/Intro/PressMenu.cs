@@ -13,7 +13,7 @@ public class PressMenu : MonoBehaviour {
 	}
 
 	public void startPressed(){
-		Application.LoadLevel("Test Scene");
+		Application.LoadLevel("Jenga Leapmotion 3");
 	}
 
 	public void instructionsPressed(){
