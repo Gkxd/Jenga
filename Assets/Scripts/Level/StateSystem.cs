@@ -12,7 +12,7 @@ public class StateSystem : MonoBehaviour {
 
     public static bool IsGameOver {
         get {
-            return instance.numberOfDangerBlocks > 1;
+            return instance.isGameOver;//instance.numberOfDangerBlocks > 1;
         }
     }
 
@@ -36,7 +36,6 @@ public class StateSystem : MonoBehaviour {
         }
         set {
             instance.lastSelectedBlock = value;
-			LastSelectedBlock.tag = "selectedBlock";
             HasBlockBeenPlacedWell = false;
         }
     }
@@ -66,6 +65,7 @@ public class StateSystem : MonoBehaviour {
     private GameObject lastInteractedBlock;
     private int moveCounter;
     private int numberOfDangerBlocks;
+    private bool isGameOver;
 
     private Queue<GameObject> topBlocks;
 
@@ -83,11 +83,11 @@ public class StateSystem : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space)) {
             if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
                 if (isLastSelectedBlockPlacedWell()) {
+                    placeLastSelectedBlockWell();
                     moveCounter++;
                     AddTopBlock(LastSelectedBlock);
                     HasBlockBeenPlacedWell = true;
                     LastSelectedBlock.GetComponent<ColorChange>().flashGood();
-					LastSelectedBlock.tag = "Block";
                     LastSelectedBlock = null;
                     LastInteractedBlock = null;
                 }
@@ -99,19 +99,21 @@ public class StateSystem : MonoBehaviour {
 
         GameObject hand;
         if (hand = GameObject.FindGameObjectWithTag("Hand")) {
-
             HandList hands = controller.GetFrame().Hands;
 
             Hand leapMotionHand = hands.Frontmost;
 
-            if (leapMotionHand.GrabStrength > 0.8f) {
+            Debug.Log(leapMotionHand.GrabStrength + " " + leapMotionHand.PinchStrength);
+            if (leapMotionHand.PinchStrength > 0.6f) {
                 if (lastInteractedBlock == null) {
                     foreach (Transform child in transform) {
                         if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
                             Transform palm = hand.transform.Find("palm");
+                            Transform index = hand.transform.Find("index/bone3");
                             Vector3 palmPosition = palm.position;
+                            Vector3 indexPosition = index.position;
                             BoxCollider blockCollider = child.GetComponent<BoxCollider>();
-                            if (blockCollider.bounds.Contains(palmPosition)) {
+                            if (blockCollider.bounds.Contains(indexPosition)) {
 
                                 if (IsTopBlock(child.gameObject)) {
                                     FlashTopBlocks();
@@ -145,6 +147,7 @@ public class StateSystem : MonoBehaviour {
                     if (gesture.Type == Gesture.GestureType.TYPE_CIRCLE) {
                         if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
                             if (isLastSelectedBlockPlacedWell()) {
+                                placeLastSelectedBlockWell();
                                 moveCounter++;
                                 AddTopBlock(LastSelectedBlock);
                                 HasBlockBeenPlacedWell = true;
@@ -192,6 +195,35 @@ public class StateSystem : MonoBehaviour {
         }
     }
 
+    private void placeLastSelectedBlockWell() {
+        if (LastSelectedBlock == null) {
+            return;
+        }
+        int layer = NumberOfLayers + moveCounter / 3;
+        float layerHeight = blockHeight * layer;
+
+        Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
+        Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
+
+        Vector3 positionXZ = Vector3.Scale(LastSelectedBlock.transform.position, Vector3.one - Vector3.up);
+
+        float horizontalPositionDifference = positionXZ.sqrMagnitude;
+        float offsetAmount = 0;
+
+        if ((positionXZ - offset).sqrMagnitude < horizontalPositionDifference) {
+            horizontalPositionDifference = (positionXZ - offset).sqrMagnitude;
+            offsetAmount = 1;
+        }
+
+        if ((positionXZ + offset).sqrMagnitude < horizontalPositionDifference) {
+            horizontalPositionDifference = (positionXZ + offset).sqrMagnitude;
+            offsetAmount = -1;
+        }
+
+        LastSelectedBlock.transform.position = Vector3.up * layerHeight + offset * offsetAmount;
+        LastSelectedBlock.transform.rotation = layerRotation;
+    }
+
     public static void SetBlockDimensions(float width, float height) {
         blockWidth = width;
         blockHeight = height;
@@ -231,5 +263,13 @@ public class StateSystem : MonoBehaviour {
         foreach (GameObject block in topBlocks) {
             block.GetComponent<ColorChange>().flashError();
         }
+    }
+
+    public void setGameOver() {
+        isGameOver = true;
+    }
+
+    public static void SetGameOver() {
+        instance.setGameOver();
     }
 }

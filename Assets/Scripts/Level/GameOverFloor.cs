@@ -15,6 +15,8 @@ public class GameOverFloor : MonoBehaviour {
         if (StateSystem.IsGameOver) {
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 0.05f);
             collider.material = physicMaterial;
+
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(180, 0, 0), 0.05f);
         }
 	}
 }

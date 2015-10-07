@@ -14,7 +14,7 @@ public class LeapmotionCameraPan : MonoBehaviour {
         if (hand = GameObject.FindGameObjectWithTag("Hand")) {
             Transform palm = hand.transform.Find("palm");
 
-            if (palm.localPosition.y > 0.35f) {
+            if (palm.localPosition.y > 0.45f) {
                 transform.Translate(Vector3.up * panSpeed * Time.deltaTime);
             }
             else if (palm.localPosition.y < 0.1f) {

@@ -36,7 +36,7 @@ public class ColorChange : MonoBehaviour {
             if ((StateSystem.LastSelectedBlock == null || StateSystem.LastSelectedBlock == gameObject) && !StateSystem.HasSelectedBlockColor && !StateSystem.IsTopBlock(gameObject)) {
                 GameObject hand;
                 if (hand = GameObject.FindGameObjectWithTag("Hand")) {
-                    Vector3 palmPosition = hand.transform.Find("palm").position;
+                    Vector3 palmPosition = hand.transform.Find("index/bone3").position;
 
                     if (blockCollider.bounds.Contains(palmPosition)) {
                         targetColor = leapMotionHandSelectColor;
