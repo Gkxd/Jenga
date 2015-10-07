@@ -76,7 +76,8 @@ public class StateSystem : MonoBehaviour {
 
         HasBlockBeenPlacedWell = true;
 
-        controller.GetLeapController().EnableGesture(Gesture.GestureType.TYPE_CIRCLE);
+        controller.GetLeapController().EnableGesture(Gesture.GestureType.TYPE_KEY_TAP);
+        controller.GetLeapController().EnableGesture(Gesture.GestureType.TYPE_SWIPE);
     }
 
     void Update() {
@@ -134,26 +135,19 @@ public class StateSystem : MonoBehaviour {
                     }
                 }
             }
-            else if (leapMotionHand.PinchStrength < 0.3f) {
-                if (lastInteractedBlock != null) {
-                    lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
-                    lastInteractedBlock.GetComponent<ColorChange>().selected = false;
-                    HasSelectedBlockColor = false;
-                    lastInteractedBlock = null;
-                }
-            }
-            /*
             else {
-                if (lastInteractedBlock != null) {
-                    lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
-                    lastInteractedBlock.GetComponent<ColorChange>().selected = false;
-                    HasSelectedBlockColor = false;
-                    lastInteractedBlock = null;
+                if (leapMotionHand.PinchStrength < 0.3f) {
+                    if (lastInteractedBlock != null) {
+                        lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
+                        lastInteractedBlock.GetComponent<ColorChange>().selected = false;
+                        HasSelectedBlockColor = false;
+                        lastInteractedBlock = null;
+                    }
                 }
 
                 GestureList gestures = controller.GetFrame().Gestures();
                 foreach (Gesture gesture in gestures) {
-                    if (gesture.Type == Gesture.GestureType.TYPE_CIRCLE) {
+                    if (gesture.Type == Gesture.GestureType.TYPE_SWIPE) {
                         if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
                             if (isLastSelectedBlockPlacedWell()) {
                                 placeLastSelectedBlockWell();
@@ -171,7 +165,7 @@ public class StateSystem : MonoBehaviour {
                         break;
                     }
                 }
-            }*/
+            }
         }
     }
 
