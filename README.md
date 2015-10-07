@@ -8,3 +8,6 @@ Unity version: 5.2.0f3
 - Wole Idowu
 - Swetha Kannan
 - Andrew R McHugh
+
+## Credit
+*Trophy Icon*: winner by Juan Pablo Bravo from the Noun Project
