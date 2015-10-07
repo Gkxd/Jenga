@@ -104,13 +104,13 @@ public class StateSystem : MonoBehaviour {
             Hand leapMotionHand = hands.Frontmost;
 
             Debug.Log(leapMotionHand.GrabStrength + " " + leapMotionHand.PinchStrength);
-            if (leapMotionHand.PinchStrength > 0.6f) {
+            if (leapMotionHand.PinchStrength > 0.8f) {
                 if (lastInteractedBlock == null) {
                     foreach (Transform child in transform) {
                         if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
                             Transform palm = hand.transform.Find("palm");
                             Transform index = hand.transform.Find("index/bone3");
-                            Vector3 palmPosition = palm.position;
+                            //Vector3 palmPosition = palm.position;
                             Vector3 indexPosition = index.position;
                             BoxCollider blockCollider = child.GetComponent<BoxCollider>();
                             if (blockCollider.bounds.Contains(indexPosition)) {
@@ -134,6 +134,15 @@ public class StateSystem : MonoBehaviour {
                     }
                 }
             }
+            else if (leapMotionHand.PinchStrength < 0.3f) {
+                if (lastInteractedBlock != null) {
+                    lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
+                    lastInteractedBlock.GetComponent<ColorChange>().selected = false;
+                    HasSelectedBlockColor = false;
+                    lastInteractedBlock = null;
+                }
+            }
+            /*
             else {
                 if (lastInteractedBlock != null) {
                     lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
@@ -162,7 +171,7 @@ public class StateSystem : MonoBehaviour {
                         break;
                     }
                 }
-            }
+            }*/
         }
     }
 
