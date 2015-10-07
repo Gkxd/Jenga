@@ -9,6 +9,7 @@ Unity version: 5.2.0f3
 - Swetha Kannan
 - Andrew R McHugh
 
-## Credit
-*Trophy Icon*: winner by Juan Pablo Bravo from the Noun Project*Open Hand*: Hand by Herbert Spencer from the Noun Project
+## Icon Credits
+*Trophy*: winner by Juan Pablo Bravo from the Noun Project
+*Open Hand*: Hand by Herbert Spencer from the Noun Project
 *Closed Hand*: Fist by Herbert Spencer from the Noun Project
