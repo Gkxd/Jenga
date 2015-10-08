@@ -71,6 +71,7 @@ public class StateSystem : MonoBehaviour {
     private int moveCounter;
     private int numberOfDangerBlocks;
     private bool isGameOver;
+    private bool leftTaken, centerTaken, rightTaken;
 
     private Queue<GameObject> topBlocks;
 
@@ -86,6 +87,7 @@ public class StateSystem : MonoBehaviour {
     }
 
     void Update() {
+        /*
         if (Input.GetKeyDown(KeyCode.Space)) {
             if (!HasBlockBeenPlacedWell && LastSelectedBlock != null) {
                 if (isLastSelectedBlockPlacedWell()) {
@@ -102,6 +104,7 @@ public class StateSystem : MonoBehaviour {
                 }
             }
         }
+        */
 
         GameObject hand;
         if (hand = GameObject.FindGameObjectWithTag("Hand")) {
@@ -182,24 +185,27 @@ public class StateSystem : MonoBehaviour {
             int layer = NumberOfLayers + moveCounter / 3;
             float layerHeight = blockHeight * layer;
 
+            /*
             Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (layer % 2)));
             Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
 
             Vector3 positionXZ = Vector3.Scale(LastSelectedBlock.transform.position, Vector3.one - Vector3.up);
-
             float horizontalPositionDifference = Mathf.Min(
                 (positionXZ).sqrMagnitude,
                 (positionXZ - offset).sqrMagnitude,
                 (positionXZ + offset).sqrMagnitude
                 );
 
-            float verticalPositionDifference = Mathf.Abs(LastSelectedBlock.transform.position.y - layerHeight);
+            float verticalPositionDifference = LastSelectedBlock.transform.position.y - layerHeight;
 
             float angleDifference = Mathf.Abs(Vector3.Dot(offset, LastSelectedBlock.transform.forward));
             Debug.Log(horizontalPositionDifference + " " + verticalPositionDifference + " " + angleDifference);
 
             //return horizontalPositionDifference < 0.4f && verticalPositionDifference < 0.2f && angleDifference < 0.2f;
-            return verticalPositionDifference < 0.2f;
+            return LastSelectedBlock.transform.position.y >= layerHeight - 0.2f;
+            */
+
+            return LastSelectedBlock.transform.position.y >= layerHeight - 0.2f;
         }
     }
 
@@ -218,14 +224,30 @@ public class StateSystem : MonoBehaviour {
         float horizontalPositionDifference = positionXZ.sqrMagnitude;
         float offsetAmount = 0;
 
-        if ((positionXZ - offset).sqrMagnitude < horizontalPositionDifference) {
+        if ((centerTaken && !rightTaken) || (positionXZ - offset).sqrMagnitude < horizontalPositionDifference) {
             horizontalPositionDifference = (positionXZ - offset).sqrMagnitude;
             offsetAmount = 1;
         }
-
-        if ((positionXZ + offset).sqrMagnitude < horizontalPositionDifference) {
-            horizontalPositionDifference = (positionXZ + offset).sqrMagnitude;
+        
+        if (((centerTaken && rightTaken) && !leftTaken) || (positionXZ + offset).sqrMagnitude < horizontalPositionDifference) {
+            //horizontalPositionDifference = (positionXZ + offset).sqrMagnitude;
             offsetAmount = -1;
+        }
+
+        if (offsetAmount == -1) {
+            leftTaken = true;
+        }
+        else if (offsetAmount == 0) {
+            centerTaken = true;
+        }
+        else if (offsetAmount == 1) {
+            rightTaken = true;
+        }
+
+        if (leftTaken && centerTaken && rightTaken) {
+            leftTaken = false;
+            rightTaken = false;
+            centerTaken = false;
         }
 
         LastSelectedBlock.transform.position = Vector3.up * layerHeight + offset * offsetAmount;
