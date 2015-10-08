@@ -61,9 +61,10 @@ public class StateSystem : MonoBehaviour {
     [Header("Gameplay Settings")]
     public int numberOfLayers;
     [Range(0, 1)]
-    public float pinchThreshold;
+    public float takeThreshold;
     [Range(0, 1)]
     public float releaseThreshold;
+    public bool usePinch;
 
     private GameObject lastSelectedBlock;
     private GameObject lastInteractedBlock;
@@ -109,12 +110,12 @@ public class StateSystem : MonoBehaviour {
             Hand leapMotionHand = hands.Frontmost;
 
             Debug.Log(leapMotionHand.GrabStrength + " " + leapMotionHand.PinchStrength);
-            if (leapMotionHand.PinchStrength > pinchThreshold) {
+            if ((usePinch ? leapMotionHand.PinchStrength : leapMotionHand.GrabStrength) > takeThreshold) {
                 if (lastInteractedBlock == null) {
                     foreach (Transform child in transform) {
                         if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
                             Transform palm = hand.transform.Find("palm");
-                            Transform index = hand.transform.Find("index/bone3");
+                            Transform index = hand.transform.Find("palm/block detector");
                             //Vector3 palmPosition = palm.position;
                             Vector3 indexPosition = index.position;
                             BoxCollider blockCollider = child.GetComponent<BoxCollider>();
