@@ -60,6 +60,10 @@ public class StateSystem : MonoBehaviour {
 
     [Header("Gameplay Settings")]
     public int numberOfLayers;
+    [Range(0, 1)]
+    public float pinchThreshold;
+    [Range(0, 1)]
+    public float releaseThreshold;
 
     private GameObject lastSelectedBlock;
     private GameObject lastInteractedBlock;
@@ -105,7 +109,7 @@ public class StateSystem : MonoBehaviour {
             Hand leapMotionHand = hands.Frontmost;
 
             Debug.Log(leapMotionHand.GrabStrength + " " + leapMotionHand.PinchStrength);
-            if (leapMotionHand.PinchStrength > 0.8f) {
+            if (leapMotionHand.PinchStrength > pinchThreshold) {
                 if (lastInteractedBlock == null) {
                     foreach (Transform child in transform) {
                         if (lastSelectedBlock == null || child.gameObject == lastSelectedBlock) {
@@ -136,7 +140,7 @@ public class StateSystem : MonoBehaviour {
                 }
             }
             else {
-                if (leapMotionHand.PinchStrength < 0.3f) {
+                if (leapMotionHand.PinchStrength < releaseThreshold) {
                     if (lastInteractedBlock != null) {
                         lastInteractedBlock.GetComponent<LeapmotionBlockBehaviour>().palm = null;
                         lastInteractedBlock.GetComponent<ColorChange>().selected = false;
