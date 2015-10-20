@@ -13,7 +13,7 @@ public class GameState : MonoBehaviour {
     private static float blockHeight;
     private static int numberOfDisconnectedBlocks;
 
-    private static Queue<BlockState> invisibleBlocks;
+    private static Queue<JengaLayer> invisibleLayers;
 
     public static GameObject lastSelectedBlock;
 
@@ -38,7 +38,7 @@ public class GameState : MonoBehaviour {
 
         state = State.TAKE_BLOCK;
 
-        invisibleBlocks = new Queue<BlockState>();
+        invisibleLayers = new Queue<JengaLayer>();
 
         buildLevel();
     }
@@ -46,7 +46,7 @@ public class GameState : MonoBehaviour {
     void Update() {
         if (state == State.PLACE_BLOCK) {
             if (Input.GetKeyDown(KeyCode.Space)) {
-                AddNewBlockOnTop();
+                AddNewBlockOnTop(0);
                 state = State.TAKE_BLOCK;
             }
         }
@@ -64,6 +64,8 @@ public class GameState : MonoBehaviour {
 
             Quaternion layerRotation = Quaternion.Euler(Vector3.up * (90 * (i % 2)));
             Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
+
+            JengaLayer blockLayer = new JengaLayer();
 
             for (int j = -1; j <= 1; j++) {
                 Vector3 randomness = jitter * (offset * Random.Range(-0.1f, 0.1f) + layerRotation * offset * Random.Range(-0.2f, 0.2f));
@@ -83,15 +85,86 @@ public class GameState : MonoBehaviour {
                 }
 
                 if (i >= numberOfLayers) {
-                    invisibleBlocks.Enqueue(blockState);
+
+                    switch (j) {
+                    case -1:
+                        blockLayer.a = blockState;
+                        break;
+                    case 0:
+                        blockLayer.b = blockState;
+                        break;
+                    case 1:
+                        blockLayer.c = blockState;
+                        break;
+                    }
+                    invisibleLayers.Enqueue(blockLayer);
                 }
             }
         }
     }
 
-    public static void AddNewBlockOnTop() {
-        if (invisibleBlocks.Count > 0) {
-            invisibleBlocks.Dequeue().setActive(true);
+    public static void AddNewBlockOnTop(int i) {
+        if (invisibleLayers.Count > 0) {
+            JengaLayer currentLayer = invisibleLayers.Peek();
+
+            currentLayer.setActive(i);
+
+            if (currentLayer.a == null && currentLayer.b == null && currentLayer.c == null) {
+                invisibleLayers.Dequeue();
+            }
+        }
+    }
+
+    private class JengaLayer {
+        public BlockState a { get; set; }
+        public BlockState b { get; set; }
+        public BlockState c { get; set; }
+
+        public void setActive(int i) {
+            switch (i) {
+            case 0:
+                if (a != null) {
+                    a.setActive(true);
+                    a = null;
+                }
+                else if (b != null) {
+                    a.setActive(true);
+                    b = null;
+                }
+                else {
+                    a.setActive(true);
+                    c = null;
+                }
+                break;
+            case 1:
+                if (b != null) {
+                    a.setActive(true);
+                    b = null;
+                }
+                else if (c != null) {
+                    a.setActive(true);
+                    c = null;
+                }
+                else {
+                    a.setActive(true);
+                    a = null;
+                }
+                break;
+            case 2:
+                if (c != null) {
+                    a.setActive(true);
+                    c = null;
+                }
+                else if (b != null) {
+                    a.setActive(true);
+                    b = null;
+                }
+                else {
+                    a.setActive(true);
+                    a = null;
+                }
+                break;
+            }
         }
     }
 }
