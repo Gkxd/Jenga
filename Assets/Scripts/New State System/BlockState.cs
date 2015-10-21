@@ -9,12 +9,14 @@ public class BlockState : MonoBehaviour {
     public BlockBehaviour blockBehaviour;
     #endregion
 
+	private static float timeOfLastBlockDeleted;
+
     public bool selected { get; set; }
     public bool isMiddleBlock { get; set; }
     private int numberOfCollidingBlocks;
 
     void Start() {
-        numberOfCollidingBlocks = 0;
+		numberOfCollidingBlocks = 0;
     }
 
     void OnCollisionEnter(Collision other) {
@@ -24,15 +26,21 @@ public class BlockState : MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == "RemoveBlock") {
-            onBlockDestroyed();
+		if (other.gameObject.tag == "RemoveBlock") {
+			
+			if (Time.time - timeOfLastBlockDeleted < 2) {
+				GameState.state = GameState.State.GAME_OVER;
+			}
+
+			timeOfLastBlockDeleted = Time.time;
 
             if (GameState.state == GameState.State.TAKE_BLOCK) {
-                GameState.state = GameState.State.PLACE_BLOCK;
+				GameState.AddNewBlockOnTop(0);
+                //GameState.state = GameState.State.PLACE_BLOCK;
             }
-            else if (GameState.state == GameState.State.PLACE_BLOCK) {
-                GameState.state = GameState.State.GAME_OVER;
-            }
+
+			onBlockDestroyed();
+
             Destroy(gameObject);
         }
     }

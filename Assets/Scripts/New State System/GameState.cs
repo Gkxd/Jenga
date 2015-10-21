@@ -128,38 +128,38 @@ public class GameState : MonoBehaviour {
                     a = null;
                 }
                 else if (b != null) {
-                    a.setActive(true);
+                    b.setActive(true);
                     b = null;
                 }
-                else {
-                    a.setActive(true);
+                else if (c != null) {
+                    c.setActive(true);
                     c = null;
                 }
                 break;
             case 1:
                 if (b != null) {
-                    a.setActive(true);
+                    b.setActive(true);
                     b = null;
                 }
                 else if (c != null) {
-                    a.setActive(true);
+                    c.setActive(true);
                     c = null;
                 }
-                else {
+                else if (a != null) {
                     a.setActive(true);
                     a = null;
                 }
                 break;
             case 2:
                 if (c != null) {
-                    a.setActive(true);
+                    c.setActive(true);
                     c = null;
                 }
                 else if (b != null) {
-                    a.setActive(true);
+                    b.setActive(true);
                     b = null;
                 }
-                else {
+                else if (a != null) {
                     a.setActive(true);
                     a = null;
                 }
