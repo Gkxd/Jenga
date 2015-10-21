@@ -7,6 +7,9 @@ public class GameState : MonoBehaviour {
         TAKE_BLOCK, PLACE_BLOCK, GAME_OVER
     }
 
+	public AudioClip impact;
+	AudioSource audio;
+
     #region Static Fields
     private static GameState instance;
     private static float blockWidth;
@@ -41,12 +44,14 @@ public class GameState : MonoBehaviour {
         invisibleLayers = new Queue<JengaLayer>();
 
         buildLevel();
+		audio = GetComponent<AudioSource>();
     }
 
     void Update() {
         if (state == State.PLACE_BLOCK) {
             if (Input.GetKeyDown(KeyCode.Space)) {
                 AddNewBlockOnTop(0);
+				audio.PlayOneShot(impact, 0.07F);
                 state = State.TAKE_BLOCK;
             }
         }
