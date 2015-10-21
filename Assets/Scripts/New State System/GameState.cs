@@ -32,6 +32,7 @@ public class GameState : MonoBehaviour {
     #endregion
 
     void Awake() {
+		Application.targetFrameRate = 14;
         instance = this;
         blockWidth = blockPrefab.transform.localScale.x;
         blockHeight = blockPrefab.transform.localScale.y;
