@@ -7,6 +7,9 @@ public class BlockState : MonoBehaviour {
     public new Rigidbody rigidbody;
     public MeshRenderer renderer;
     public BlockBehaviour blockBehaviour;
+    public BlockSounds blockSounds;
+
+    public GameObject disappearEffect;
     #endregion
 
 	private static float timeOfLastBlockDeleted;
@@ -62,8 +65,16 @@ public class BlockState : MonoBehaviour {
         Debug.Log(name + " has exited the tower.");
 
         // Make player drop the block when it exits the tower
-        selected = false;
-        GameState.lastSelectedBlock = null;
+        if (selected) {
+            selected = false;
+            GameState.lastSelectedBlock = null;
+
+            blockSounds.playBlockLeaveSound();
+
+            renderer.enabled = false;
+
+            Instantiate(disappearEffect, transform.position, transform.rotation);
+        }
     }
 
     private void onBlockDestroyed() {
