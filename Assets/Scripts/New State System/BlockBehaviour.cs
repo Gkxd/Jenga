@@ -5,7 +5,12 @@ using Leap;
 
 public class BlockBehaviour : MonoBehaviour {
     #region Serialized Fields
-    [Header("Reference Settings")]
+	[Header("Audio Settings")]
+	public AudioClip MovingBlock;
+	public AudioSource audio;
+	public bool PlayedAudioMovingBlock = false;
+
+	[Header("Reference Settings")]
     public new Rigidbody rigidbody;
     public MeshRenderer renderer;
     public BoxCollider collider;
@@ -39,6 +44,8 @@ public class BlockBehaviour : MonoBehaviour {
         currentColor = targetColor;
         blockMaterial = renderer.material;
         controller = GameObject.FindGameObjectWithTag("LeapmotionController").GetComponent<HandController>();
+
+		//audio = GetComponents<AudioSource>() [1];
     }
 
     void FixedUpdate() {
@@ -77,6 +84,8 @@ public class BlockBehaviour : MonoBehaviour {
     }
 
     void Update() {
+		PlayedAudioMovingBlock = false;
+
         HandList hands = controller.GetFrame().Hands;
         Hand leapMotionHand = hands.Frontmost;
 
@@ -108,7 +117,13 @@ public class BlockBehaviour : MonoBehaviour {
         else {
             targetColor = selectedColor;
 
-            if (hand == null || (leapMotionHand.GrabStrength < dropThreshold && GameState.lastSelectedBlock == gameObject)) {
+			if( PlayedAudioMovingBlock == false)
+			{
+				audio.PlayOneShot(MovingBlock, 0.07F);
+				PlayedAudioMovingBlock = true;
+			}
+
+			if (hand == null || (leapMotionHand.GrabStrength < dropThreshold && GameState.lastSelectedBlock == gameObject)) {
                 blockState.selected = false;
                 GameState.lastSelectedBlock = null;
             }
