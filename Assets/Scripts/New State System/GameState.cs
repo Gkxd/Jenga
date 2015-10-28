@@ -6,9 +6,11 @@ public class GameState : MonoBehaviour {
     public enum State {
         TAKE_BLOCK, PLACE_BLOCK, GAME_OVER
     }
-
+	//Audio
+	[Header("Audio Settings")]
 	public AudioClip impact;
 	AudioSource audio;
+	public bool playedAudioWhenFalling = false;
 
     #region Static Fields
     private static GameState instance;
@@ -50,9 +52,16 @@ public class GameState : MonoBehaviour {
 
     void Update() {
         if (state == State.PLACE_BLOCK) {
+			if( playedAudioWhenFalling == false)
+			{
+				print ("PLAYING AUDIO");
+				audio.PlayOneShot(impact, 0.07F);
+				playedAudioWhenFalling = true;
+			}
+
             if (Input.GetKeyDown(KeyCode.Space)) {
                 AddNewBlockOnTop(0);
-				audio.PlayOneShot(impact, 0.07F);
+				playedAudioWhenFalling = false;
                 state = State.TAKE_BLOCK;
             }
         }

@@ -2,6 +2,10 @@
 using System.Collections;
 
 public class ColorChange : MonoBehaviour {
+	[Header("Audio Settings")]
+	public AudioClip MovingBlock;
+	AudioSource audio;
+	public bool PlayedAudioMovingBlock = false;
 
     [Header("Reference Settings")]
     public Rigidbody blockRB;
@@ -26,10 +30,12 @@ public class ColorChange : MonoBehaviour {
     void Start() {
         currentColor = targetColor;
         blockMaterial = blockMeshRenderer.material;
+		audio = GetComponent<AudioSource>();
     }
 
     void Update() {
         if (selected == false) {
+			PlayedAudioMovingBlock = false;
             float t = Mathf.Clamp01(blockRB.velocity.magnitude / 10);
             targetColor = velocityColor.Evaluate(t);
 
@@ -50,6 +56,11 @@ public class ColorChange : MonoBehaviour {
         }
         else {
             targetColor = selectedColor;
+			if( PlayedAudioMovingBlock == false)
+			{
+				audio.PlayOneShot(MovingBlock, 0.07F);
+				PlayedAudioMovingBlock = true;
+			}
         }
 
         currentColor = Color.Lerp(currentColor, targetColor, 10 * Time.deltaTime);
