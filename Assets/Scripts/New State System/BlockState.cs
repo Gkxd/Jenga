@@ -65,15 +65,15 @@ public class BlockState : MonoBehaviour {
         Debug.Log(name + " has exited the tower.");
 
         // Make player drop the block when it exits the tower
-        if (selected) {
+        if (GameState.state != GameState.State.GAME_OVER) {
+            GameObject disappear = (GameObject)Instantiate(disappearEffect, transform.position, transform.rotation);
+            Debug.Log(disappear);
             selected = false;
             GameState.lastSelectedBlock = null;
 
             blockSounds.playBlockLeaveSound();
 
             renderer.enabled = false;
-
-            Instantiate(disappearEffect, transform.position, transform.rotation);
         }
     }
 

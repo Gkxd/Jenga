@@ -88,19 +88,37 @@ public class BlockBehaviour : MonoBehaviour {
 
             if (GameState.state == GameState.State.TAKE_BLOCK) {
                 if (hand != null) {
-                    Vector3 grabPosition = hand.transform.Find("palm/block detector").position;
+                    int extendedFingers = leapMotionHand.Fingers.Extended().Count;
+                    if (extendedFingers > 0 && extendedFingers <= 2) {
+                        Vector3 pokePosition = hand.transform.Find("index/bone3").position;
 
-                    if (collider.bounds.Contains(grabPosition) && GameState.lastSelectedBlock == null) {
-                        targetColor = leapMotionHandSelectColor;
-
-                        if (leapMotionHand.GrabStrength > takeThreshold) {
-                            blockState.selected = true;
-                            GameState.lastSelectedBlock = gameObject;
+                        if (collider.bounds.Contains(pokePosition)) {
+                            Vector3 localPokePosition = transform.InverseTransformPoint(pokePosition);
+                            Debug.Log(localPokePosition);
+                            if (localPokePosition.z > 0.4) {
+                                rigidbody.AddForce(-10 * Vector3.forward, ForceMode.VelocityChange);
+                            }
+                            else if (localPokePosition.z < -0.4) {
+                                rigidbody.AddForce(10 * Vector3.forward, ForceMode.VelocityChange);
+                            }
+                            targetColor = leapMotionHandSelectColor;
                         }
                     }
-                    else if ((grabPosition - transform.position).sqrMagnitude < 100 && GameState.lastSelectedBlock == null) {
-                        float distance = (grabPosition - transform.position).magnitude;
-                        targetColor = leapMotionHandColor.Evaluate(1 - distance / 10);
+                    else {
+                        Vector3 grabPosition = hand.transform.Find("palm/block detector").position;
+
+                        if (collider.bounds.Contains(grabPosition) && GameState.lastSelectedBlock == null) {
+                            targetColor = leapMotionHandSelectColor;
+
+                            if (leapMotionHand.GrabStrength > takeThreshold) {
+                                blockState.selected = true;
+                                GameState.lastSelectedBlock = gameObject;
+                            }
+                        }
+                        else if ((grabPosition - transform.position).sqrMagnitude < 100 && GameState.lastSelectedBlock == null) {
+                            float distance = (grabPosition - transform.position).magnitude;
+                            targetColor = leapMotionHandColor.Evaluate(1 - distance / 10);
+                        }
                     }
                 }
             }
