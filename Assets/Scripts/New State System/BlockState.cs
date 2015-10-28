@@ -4,9 +4,7 @@ using System.Collections;
 public class BlockState : MonoBehaviour {
     #region Serialized Fields
 	//Audio
-	[Header("Audio Settings")]
-	public AudioClip impact;
-	public AudioSource audioSource;
+
 
     [Header("Reference Settings")]
     public new Rigidbody rigidbody;
@@ -24,7 +22,7 @@ public class BlockState : MonoBehaviour {
 
     void Start() {
 		numberOfCollidingBlocks = 0;
-		//audioSource = GetComponents<AudioSource>() [0];
+
     }
 
     void OnCollisionEnter(Collision other) {
@@ -68,8 +66,6 @@ public class BlockState : MonoBehaviour {
         // A block is "in" the tower if it is touching at least one other block.
 
         Debug.Log(name + " has exited the tower.");
-			print ("PLAYING AUDIO");
-			audioSource.PlayOneShot(impact, 0.07F);
 
 
         // Make player drop the block when it exits the tower

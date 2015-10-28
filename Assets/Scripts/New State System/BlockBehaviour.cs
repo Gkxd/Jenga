@@ -22,6 +22,7 @@ public class BlockBehaviour : MonoBehaviour {
     public Gradient leapMotionHandColor;
     public Color leapMotionHandSelectColor;
     public Color selectedColor;
+	public Color EndTurnColor;
 
     [Header("Damping")]
     public float maxDamp;
@@ -91,6 +92,12 @@ public class BlockBehaviour : MonoBehaviour {
 
         GameObject hand = GameObject.FindGameObjectWithTag("Hand");
 
+		if (GameObject.Find("StateBlockDisappear(Clone)") != null) {
+			currentColor = EndTurnColor;
+			print ("END TURN");
+		}
+
+
         if (!blockState.selected) {
             float t = Mathf.Clamp01(rigidbody.velocity.magnitude / 10);
             targetColor = velocityColor.Evaluate(t);
@@ -135,6 +142,7 @@ public class BlockBehaviour : MonoBehaviour {
         else {
             dampAmount = Mathf.Min(maxDamp, dampAmount + dampIncrease * Time.deltaTime);
         }
+
 
         rigidbody.drag = dampAmount;
         rigidbody.angularDrag = dampAmount;
