@@ -103,7 +103,7 @@ public class BlockBehaviour : MonoBehaviour {
 
 
         if (!blockState.selected) {
-            float t = Mathf.Clamp01(rigidbody.velocity.magnitude / 10);
+            float t = Mathf.Clamp01(rigidbody.velocity.magnitude / 10f);
             targetColor = velocityColor.Evaluate(t);
 
             if (GameState.state == GameState.State.TAKE_BLOCK) {
@@ -116,10 +116,10 @@ public class BlockBehaviour : MonoBehaviour {
                             Vector3 localPokePosition = transform.InverseTransformPoint(pokePosition);
                             Debug.Log(localPokePosition);
                             if (localPokePosition.z > 0.4) {
-                                rigidbody.AddForce(-10 * Vector3.forward, ForceMode.VelocityChange);
+                                rigidbody.AddForce(-0.5f * Vector3.forward, ForceMode.VelocityChange);
                             }
                             else if (localPokePosition.z < -0.4) {
-                                rigidbody.AddForce(10 * Vector3.forward, ForceMode.VelocityChange);
+                                rigidbody.AddForce(0.5f * Vector3.forward, ForceMode.VelocityChange);
                             }
                             targetColor = leapMotionHandSelectColor;
                         }
@@ -135,9 +135,10 @@ public class BlockBehaviour : MonoBehaviour {
                                 GameState.lastSelectedBlock = gameObject;
                             }
                         }
-                        else if ((grabPosition - transform.position).sqrMagnitude < 100 && GameState.lastSelectedBlock == null) {
+                        else if ((grabPosition - transform.position).sqrMagnitude < 1 && GameState.lastSelectedBlock == null) {
                             float distance = (grabPosition - transform.position).magnitude;
-                            targetColor = leapMotionHandColor.Evaluate(1 - distance / 10);
+							Debug.Log (distance);
+                            targetColor = leapMotionHandColor.Evaluate(1 - distance);
                         }
                     }
                 }
