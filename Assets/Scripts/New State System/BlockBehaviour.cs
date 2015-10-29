@@ -84,6 +84,10 @@ public class BlockBehaviour : MonoBehaviour {
     }
 
     void Update() {
+        if (GameState.isTopBlock(blockState)) {
+            return;
+        }
+
 		PlayedAudioMovingBlock = false;
 
         HandList hands = controller.GetFrame().Hands;

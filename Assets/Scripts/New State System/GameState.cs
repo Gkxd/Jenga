@@ -17,8 +17,10 @@ public class GameState : MonoBehaviour {
     private static float blockWidth;
     private static float blockHeight;
     private static int numberOfDisconnectedBlocks;
+    private static bool hasBlockBeenPlaced;
 
     private static Queue<JengaLayer> invisibleLayers;
+    private static JengaLayer topLayer;
 
     public static GameObject lastSelectedBlock;
 
@@ -72,6 +74,8 @@ public class GameState : MonoBehaviour {
             Destroy(child.gameObject);
         }
 
+        topLayer = new JengaLayer();
+
         for (int i = 0; i < numberOfLayers + additionalLayers; i++) {
             float layerHeight = blockHeight * i;
 
@@ -81,7 +85,6 @@ public class GameState : MonoBehaviour {
             Vector3 offset = layerRotation * new Vector3(blockWidth, 0, 0);
 
             JengaLayer blockLayer = new JengaLayer();
-
             for (int j = -1; j <= 1; j++) {
                 Vector3 randomness = jitter * (offset * Random.Range(-0.1f, 0.1f) + layerRotation * offset * Random.Range(-0.2f, 0.2f));
 
@@ -114,6 +117,19 @@ public class GameState : MonoBehaviour {
                     }
                     invisibleLayers.Enqueue(blockLayer);
                 }
+                else if (i == numberOfLayers - 1) {
+                    switch (j) {
+                        case -1:
+                            topLayer.a = blockState;
+                            break;
+                        case 0:
+                            topLayer.b = blockState;
+                            break;
+                        case 1:
+                            topLayer.c = blockState;
+                            break;
+                    }
+                }
             }
         }
     }
@@ -127,6 +143,8 @@ public class GameState : MonoBehaviour {
             if (currentLayer.a == null && currentLayer.b == null && currentLayer.c == null) {
                 invisibleLayers.Dequeue();
             }
+
+            hasBlockBeenPlaced = true;
         }
     }
 
@@ -180,6 +198,19 @@ public class GameState : MonoBehaviour {
                 }
                 break;
             }
+        }
+
+        public bool contains(BlockState block) {
+            return a == block || b == block || c == block;
+        }
+    }
+
+    public static bool isTopBlock(BlockState block) {
+        if (!hasBlockBeenPlaced) {
+            return topLayer.contains(block);
+        }
+        else {
+            return invisibleLayers.Peek().contains(block);
         }
     }
 }
