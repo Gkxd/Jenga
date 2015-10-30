@@ -113,6 +113,7 @@ public class BlockBehaviour : MonoBehaviour {
                         Vector3 pokePosition = hand.transform.Find("index/bone3").position;
 
                         if (collider.bounds.Contains(pokePosition)) {
+							if(!audio.isPlaying) audio.PlayOneShot(MovingBlock, 0.07F);
                             Vector3 localPokePosition = transform.InverseTransformPoint(pokePosition);
                             Debug.Log(localPokePosition);
                             if (localPokePosition.z > 0.4) {
